@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMS Sender</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            height: 100vh;
+            margin: 0;
+        }
+        .sidebar {
+            background-color: #343a40;
+            width: 80px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+        }
+        .sidebar i {
+            color: #adb5bd;
+            font-size: 24px;
+            margin: 20px 0;
+            cursor: pointer;
+        }
+        .sidebar i:hover {
+            color: #ffffff;
+        }
+        .header {
+            margin-left: 70px;
+            background-color: #007bff;
+            color: white;
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: calc(100% - 80px);
+        }
+        .content {
+            margin-left: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: calc(100% - 80px);
+            height: 100%;
+        }
+        .card {
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        .spinner {
+            display: none;
+            margin: 20px auto;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <i class="fas fa-home"></i>
+    <i class="fas fa-paper-plane"></i>
+    <i class="fas fa-cogs"></i>
+    <i class="fas fa-info-circle"></i>
+</div>
+
+<div class="header">
+    <h1>SenderX App</h1>
+    <div>
+        <button class="btn btn-light">Profile</button>
+        <button class="btn btn-light">Settings</button>
+    </div>
+</div>
+
+<div class="content">
+    <div class="card">
+        <h3 class="text-center">Bulk SMS Sender</h3>
+        <form id="smsForm" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!-- Country Selector -->
+            <div class="form-group">
+                <label for="country">Select Country:</label>
+                <select class="form-control" id="country" name="country" required>
+                    <option value="US">USA</option>
+                    <option value="AU">Australia</option>
+                    <option value="CA">Canada</option>
+                    <option value="IN">India</option>
+                </select>
+            </div>
+            <!-- Enter Numbers -->
+            <div class="form-group">
+                <label for="phone_number">Enter Numbers (comma-separated):</label>
+                <textarea class="form-control" id="phone_number" name="phone_number" rows="2"></textarea>
+            </div>
+            <!-- File Upload or Link Option -->
+            <div class="form-group">
+                <label>Choose Input Method:</label>
+                <div class="custom-control custom-radio">
+                    <input type="radio" id="uploadOption" name="inputOption" class="custom-control-input" value="upload" checked>
+                    <label class="custom-control-label" for="uploadOption">Upload CSV/PDF File</label>
+                </div>
+                <div class="custom-control custom-radio">
+                    <input type="radio" id="linkOption" name="inputOption" class="custom-control-input" value="link">
+                    <label class="custom-control-label" for="linkOption">Paste Link</label>
+                </div>
+            </div>
+            <!-- Conditional Input Fields -->
+            <div class="form-group" id="fileUploadDiv">
+                <label for="file_upload">Upload CSV/PDF File:</label>
+                <input type="file" class="form-control-file" id="file_upload" name="file_upload">
+            </div>
+            <div class="form-group" id="linkInputDiv" style="display: none;">
+                <label for="link_input">Paste Link:</label>
+                <input type="url" class="form-control" id="link_input" name="link_input" placeholder="https://example.com">
+            </div>
+            <!-- Message Content -->
+            <div class="form-group">
+                <label for="message_content">Message Content:</label>
+                <textarea class="form-control" id="message_content" name="message_content" rows="3"></textarea>
+            </div>
+            <button type="button" class="btn btn-primary btn-block" onclick="sendSMS()">Send SMS</button>
+        </form>
+        <div class="spinner" id="spinner"></div>
+        <div id="result" class="mt-4"></div>
+    </div>
+</div>
+
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>
+<script>
+document.getElementById('uploadOption').addEventListener('change', function() {
+    toggleInputFields();
+});
+document.getElementById('linkOption').addEventListener('change', function() {
+    toggleInputFields();
+});
+
+function toggleInputFields() {
+    const uploadDiv = document.getElementById('fileUploadDiv');
+    const linkDiv = document.getElementById('linkInputDiv');
+    if (document.getElementById('uploadOption').checked) {
+        uploadDiv.style.display = 'block';
+        linkDiv.style.display = 'none';
+    } else {
+        uploadDiv.style.display = 'none';
+        linkDiv.style.display = 'block';
+    }
+}
+
+function sendSMS() {
+    const formData = new FormData(document.getElementById("smsForm"));
+    document.getElementById("spinner").style.display = 'block';
+    document.getElementById("result").innerHTML = '';
+
+    fetch("{% url 'send_sms' %}", {
+        method: "POST",
+        body: formData,
+        headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById("spinner").style.display = 'none';
+        if (data.status === 'success') {
+            document.getElementById("result").innerHTML = `
+                <div class="alert alert-success">
+                    <strong>Summary:</strong><br>
+                    Total Numbers: ${data.total}<br>
+                    Sent Successfully: ${data.sent}<br>
+                    Failed: ${data.failed}<br>
+                    <strong>Failed Numbers:</strong> ${data.failed_numbers.join(", ")}
+                </div>
+            `;
+        } else {
+            document.getElementById("result").innerHTML = '<div class="alert alert-danger">Failed to send messages.</div>';
+        }
+    })
+    .catch(error => {
+        document.getElementById("spinner").style.display = 'none';
+        document.getElementById("result").innerHTML = '<div class="alert alert-danger">An error occurred.</div>';
+    });
+}
+</script>
+
+</body>
+</html>
