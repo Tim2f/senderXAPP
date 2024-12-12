@@ -3,7 +3,6 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from twilio.rest import Client
 import csv
-import os
 import mimetypes
 
 # Function to test Twilio connection
