@@ -2,16 +2,16 @@
 FROM python:3.9-slim
 
 # Set the working directory in the container
-WORKDIR /app
+WORKDIR /senderX
 
 # Copy the requirements.txt into the container
-COPY requirements.txt /app/
+COPY requirements.txt /senderX/
 
 # Install the dependencies from requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application files
-COPY . /app/
+COPY . /senderX/
 
 # Expose the port that the app will run on
 EXPOSE 8000
