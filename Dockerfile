@@ -1,23 +1,18 @@
-# Use the official Python image from the DockerHub
-FROM python:3.9-slim
+# Use Python base image
+FROM python:3.11-slim
 
-# Set the working directory in the container
-WORKDIR /senderX
+# Set working directory inside the container
+RUN mkdir -p /app/senderX
+WORKDIR /app/senderX
 
-# Copy the requirements.txt into the container
-COPY requirements.txt /senderX/
+# Copy the current directory contents into the container
+COPY . /app/senderX
 
-# Install the dependencies from requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+# Install dependencies
+RUN pip install --no-cache-dir -r /app/senderX/requirements.txt
 
-# Copy the rest of the application files
-COPY . /senderX/
-
-# Expose the port that the app will run on
+# Expose the port (optional)
 EXPOSE 8000
 
-# Set the environment variable for the Django secret key
-ENV DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY
-
-# Run the Django application when the container starts
+# Run the application
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

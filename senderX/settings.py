@@ -18,16 +18,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-from dotenv import load_dotenv
-import os
+from decouple import config
 
-# Load .env file
-load_dotenv()
+# Load environment variables
+SECRET_KEY = config('DJANGO_SECRET_KEY')
+TWILIO_AUTH_TOKEN = config('TWILIO_AUTH_TOKEN')
+TWILIO_ACCOUNT_SID = config('TWILIO_ACCOUNT_SID')
+TWILIO_PHONE_NUMBER = config('TWILIO_PHONE_NUMBER')
 
-SECRET_KEY = os.getenv('SECRET_KEY')
-TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
-TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
-TWILIO_PHONE_NUMBER=os.getenv('TWILIO_PHONE_NUMBER')
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
