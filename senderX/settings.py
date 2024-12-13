@@ -18,9 +18,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
+from dotenv import load_dotenv
+import os
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-5c03&_!+panbq@7a5j%e%+2-io_=iye#-df34v7^#_6_(g76r2'
+# Load .env file
+load_dotenv()
+
+SECRET_KEY = os.getenv('SECRET_KEY')
+TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
+TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
+TWILIO_PHONE_NUMBER=os.getenv('TWILIO_PHONE_NUMBER')
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -126,9 +134,7 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# Twilio Configuration
-TWILIO_ACCOUNT_SID = 'AC65f6d4d7b70dc0f9819f2234120c3d10'
-TWILIO_AUTH_TOKEN = 'fc8363050978a27ecc363aea479444fc'
-TWILIO_PHONE_NUMBER = '+13072125908'
+
+
 
 
