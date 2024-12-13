@@ -30,6 +30,7 @@ django-debug-toolbar==4.4.6
 filelock==3.16.1
 frozenlist==1.5.0
 futures==3.0.5
+gunicorn==23.0.0
 hyperlink==21.0.0
 idna==3.9
 incremental==24.7.2
@@ -60,6 +61,7 @@ PyJWT==2.9.0
 pyOpenSSL==24.2.1
 PyPDF2==3.0.1
 python-dateutil==2.9.0.post0
+python-decouple==3.8
 python-dotenv==1.0.1
 pytz==2024.2
 PyYAML==6.0.2
@@ -92,4 +94,3 @@ wheel==0.44.0
 wrapt==1.16.0
 yarl==1.17.1
 zope.interface==7.0.3
-gunicorn-23.0.0
