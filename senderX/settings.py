@@ -33,6 +33,8 @@ DEBUG = False
 
 ALLOWED_HOSTS = [ 'https://senderxapp.onrender.com']
 
+SECURE_SSL_REDIRECT = True
+
 
 # Application definition
 
@@ -124,6 +126,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 
 
 
