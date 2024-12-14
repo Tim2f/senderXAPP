@@ -29,11 +29,11 @@ TWILIO_PHONE_NUMBER = config('TWILIO_PHONE_NUMBER')
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = [ 'senderxapp.onrender.com']
+ALLOWED_HOSTS = ['127.0.0.1']
 
-SECURE_SSL_REDIRECT = True
+
 
 
 # Application definition

@@ -45,7 +45,7 @@
             z-index: 1000;
             background-color: #007bff;
             color: white;
-            padding: 15px 20px;
+            padding: 5px 10px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -53,16 +53,31 @@
 
         /* Content */
         .content {
-            margin-left: 80px;
-            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            margin: 20px;
+            margin-top: 5px;
+            justify-content: center;
+            gap: 10px;
         }
         .card {
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 600px;
+            max-width: 500px;
             margin: 0 auto;
+        }
+        #left-card {
+            flex: 1;
+            max-width: 500px;
+            margin-bottom:0px;
+        }
+        #right-card {
+            flex: 1;
+            min-width: 300px;
+            display: none;
+            background: rgba(0, 123, 255, 0.1);
         }
 
         /* Footer */
@@ -70,7 +85,7 @@
             background-color: #343a40;
             color: white;
             text-align: center;
-            padding: 10px 0;
+            padding: 0px 0;
             position: fixed;
             bottom: 0;
             left: 0;
@@ -88,6 +103,36 @@
             height: 40px;
             animation: spin 1s linear infinite;
         }
+        /* Success message popup */
+        #successPopup {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: green;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            display: none;
+            z-index: 9999;
+        }
+        
+        /* Failure message popup */
+        #failurePopup {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: red;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            display: none;
+            z-index: 9999;
+        }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -133,8 +178,8 @@
     </div>
 </div>
 
-<div class="content">
-    <div class="card">
+<div class="content" id="content">
+    <div class="card" class= "left-card">
         <h3 class="text-center">Bulk SMS Sender</h3>
         <form id="smsForm" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
@@ -181,17 +226,29 @@
             </div>
             <button type="button" class="btn btn-primary btn-block" onclick="sendSMS()">Send SMS</button>
         </form>
-        <div class="spinner" id="spinner"></div>
-        <div id="result" class="mt-4"></div>
     </div>
+
+   <!-- Results Card -->
+<div class="card left-card">
+    <h3 class="text-center"> SMS Reports</h3>
+    <div id="result"></div> <!-- Where results will be shown -->
+    <div class="spinner" id="spinner" style="display: none;"></div> <!-- Spinner shown during loading -->
 </div>
 
+<!-- Success Popup Message -->
+<div id="successPopup" class="popup-message" style="display: none;">
+    Your message was successfully sent!
+</div>
+
+<!-- Failure Popup Message -->
+<div id="failurePopup" class="popup-message" style="display: none;">
+    Failed to send your message.
+</div>
+
+    
 <div class="footer">
     <p>© 2024 SenderX App. All Rights Reserved.</p>
 </div>
-
-
-
 
 <script src="https://kit.fontawesome.com/a076d05399.js"></script>
 <script>
@@ -214,10 +271,21 @@ function toggleInputFields() {
     }
 }
 
+// Function to show a popup message
+function showPopup(message, type = 'success') {
+    let popupId = type === 'success' ? 'successPopup' : 'failurePopup';
+    const popup = document.getElementById(popupId);
+    popup.innerText = message;
+    popup.style.display = 'block';
+    setTimeout(() => {
+        popup.style.display = 'none';
+    }, 5000);  // Popup disappears after 2 seconds
+}
+
 function sendSMS() {
     const formData = new FormData(document.getElementById("smsForm"));
-    document.getElementById("spinner").style.display = 'block';
-    document.getElementById("result").innerHTML = '';
+    document.getElementById("spinner").style.display = 'block';  // Show spinner
+    document.getElementById("result").innerHTML = '';  // Clear previous results
 
     fetch("{% url 'send_sms' %}", {
         method: "POST",
@@ -226,27 +294,47 @@ function sendSMS() {
     })
     .then(response => response.json())
     .then(data => {
-        document.getElementById("spinner").style.display = 'none';
+        console.log('API Response:, data');
+        document.getElementById("spinner").style.display = 'none';  // Hide spinner
         if (data.status === 'success') {
+            showPopup("Your message was successfully sent!", 'success');  // Show success popup
             document.getElementById("result").innerHTML = `
-                <div class="alert alert-success">
-                    <strong>Summary:</strong><br>
-                    Total Numbers: ${data.total}<br>
-                    Sent Successfully: ${data.sent}<br>
-                    Failed: ${data.failed}<br>
-                    <strong>Failed Numbers:</strong> ${data.failed_numbers.join(", ")}
+                <div class="card text-white bg-success mb-3">
+                    <div class="card-header">SMS Summary</div>
+                    <div class="card-body">
+                        <p class="card-text"><strong>Total Numbers:</strong> ${data.total}</p>
+                        <p class="card-text"><strong>Sent Successfully:</strong> ${data.sent}</p>
+                        <p class="card-text"><strong>Failed:</strong> ${data.failed}</p>
+                        <p class="card-text"><strong>Failed Numbers:</strong> ${data.failed_numbers.join(", ")}</p>
+                    </div>
                 </div>
             `;
         } else {
-            document.getElementById("result").innerHTML = '<div class="alert alert-danger">Failed to send messages.</div>';
+            showPopup("Failed to send your message. Please try again.", 'failure');  // Show failure popup
+            document.getElementById("result").innerHTML = `
+                <div class="card text-white bg-danger mb-3">
+                    <div class="card-header">Error</div>
+                    <div class="card-body">
+                        <p class="card-text">Failed to send messages. Please try again.</p>
+                    </div>
+                    
+                </div>
+            `;
         }
     })
     .catch(error => {
-        document.getElementById("spinner").style.display = 'none';
-        document.getElementById("result").innerHTML = '<div class="alert alert-danger">An error occurred.</div>';
+        document.getElementById("spinner").style.display = 'none';  // Hide spinner in case of error
+        showPopup("An error occurred. Please try again later.", 'failure');  // Show error popup
+        document.getElementById("result").innerHTML = `
+            <div class="card text-white bg-danger mb-3">
+                <div class="card-header">Error</div>
+                <div class="card-body">
+                    <p class="card-text">An error occurred. Please try again later.</p>
+                </div>
+            </div>
+        `;
     });
 }
 </script>
-
 </body>
 </html>
