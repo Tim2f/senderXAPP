@@ -1,14 +1,10 @@
-# s/urls.py
-
 from django.urls import path
 from . import views
-from django.views.generic import RedirectView
 
 urlpatterns = [
-    path('', views.send_sms, name="send_sms"),
- 
+    path('', views.landing_page, name="landing_page"),
+    path('signin/', views.signin_view, name="signin"),
+    path('signup/', views.signup_view, name="signup"),
+    path('logout/', views.logout_view, name="logout"),
+    path('send_sms/', views.send_sms, name="send_sms"),
 ]
-
-
-
-

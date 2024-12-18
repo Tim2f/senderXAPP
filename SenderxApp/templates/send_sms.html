@@ -72,10 +72,12 @@
             flex: 1;
             max-width: 500px;
             margin-bottom:0px;
+            margin-left: 40px;
         }
         #right-card {
             flex: 1;
             min-width: 300px;
+            margin-left: 40px;
             display: none;
             background: rgba(0, 123, 255, 0.1);
         }
@@ -173,8 +175,9 @@
 <div class="header">
     <h1>SenderX App</h1>
     <div>
-        <button class="btn btn-light">Profile</button>
+        <button class="btn btn-light"><a href="{% url 'logout' %}" >Sign Out</a></button>
         <button class="btn btn-light">Settings</button>
+        
     </div>
 </div>
 
