@@ -38,7 +38,8 @@ def signup_view(request):
         if not User.objects.filter(username=username).exists():
             user = User.objects.create_user(username=username, email=email, password=password)
             login(request, user)
-            return redirect('send_sms')
+            
+            return redirect('signin')
         else:
             return render(request, 'landing_page.html', {"error": "Username already exists", "form_type": "signup"})
     return render(request, 'landing_page.html', {"form_type": "signup"})
@@ -47,7 +48,7 @@ def signup_view(request):
 def logout_view(request):
     logout(request)
     request.session.clear()
-    return redirect('landing_page')
+    return redirect('signin')
 
 
 def send_sms(request):

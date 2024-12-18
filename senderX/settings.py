@@ -127,8 +127,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 
-CSRF_COOKIE_SECURE = False
-SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True  # Set to True in production with HTTPS
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 1209600  # 2 weeks
 
