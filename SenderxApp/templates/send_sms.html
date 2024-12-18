@@ -26,7 +26,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-top: 20px;
+            padding-top: 70px;
         }
         .sidebar i {
             color: #adb5bd;
@@ -58,10 +58,10 @@
             margin: 20px;
             margin-top: 5px;
             justify-content: center;
-            gap: 10px;
+            gap: 5px;
         }
         .card {
-            padding: 20px;
+            padding: 10px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             width: 100%;
@@ -73,6 +73,7 @@
             max-width: 500px;
             margin-bottom:0px;
             margin-left: 40px;
+            padding-bottom: 40px;
         }
         #right-card {
             flex: 1;
@@ -81,7 +82,7 @@
             display: none;
             background: rgba(0, 123, 255, 0.1);
         }
-
+#sidebar .themeIcon i {margin: auto;}
      
 
         /* Spinner */
@@ -125,6 +126,33 @@
             z-index: 9999;
         }
 
+        :root {
+            --bg-color: #ffffff;
+            --text-color:rgb(48, 4, 41);
+          }
+          
+          body.dark-mode {
+            --bg-color:rgb(13, 13, 14);
+            --text-color:rgb(27, 13, 134);
+          }
+          
+          body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+          }
+          
+          .theme-toggle {
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-color);
+          }
+          
+
+
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -160,11 +188,15 @@
     <i class="fas fa-paper-plane"></i>
     <i class="fas fa-cogs"></i>
     <i class="fas fa-info-circle"></i>
+    <i <button id="themeToggle" class="theme-toggle">
+        <i id="themeIcon" class="fas fa-sun"></i>
+      </button></i>
 </div>
 
 <div class="header">
     <h1>SenderX App</h1>
     <div>
+        
         <button class="btn btn-light"><a href="{% url 'logout' %}" >Sign Out</a></button>
         <button class="btn btn-light">Settings</button>
         
@@ -326,6 +358,24 @@ function sendSMS() {
         `;
     });
 }
+
+document.getElementById('themeToggle').addEventListener('click', function () {
+    const body = document.body;
+    const themeIcon = document.getElementById('themeIcon');
+
+    // Toggle dark mode class
+    body.classList.toggle('dark-mode');
+
+    // Update the icon
+    if (body.classList.contains('dark-mode')) {
+        themeIcon.classList.remove('fa-sun');
+        themeIcon.classList.add('fa-moon');
+    } else {
+        themeIcon.classList.remove('fa-moon');
+        themeIcon.classList.add('fa-sun');
+    }
+});
+
 </script>
 </body>
 </html>
