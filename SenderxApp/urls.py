@@ -7,4 +7,7 @@ urlpatterns = [
     path('signup/', views.signup_view, name="signup"),
     path('logout/', views.logout_view, name="logout"),
     path('send_sms/', views.send_sms, name="send_sms"),
+
+    # Email-related endpoint
+    path('send_emails/', views.send_emails, name='send_emails'),
 ]

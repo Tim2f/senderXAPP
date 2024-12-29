@@ -7,6 +7,7 @@ from twilio.rest import Client
 import csv
 import mimetypes
 from django.contrib  import messages
+import requests
 
 
 def landing_page(request):
@@ -15,19 +16,29 @@ def landing_page(request):
     return render(request, 'landing_page.html')
 
 
+
+
 def signin_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+        remember_me = request.POST.get('remember_me')  # Fetch the checkbox value
+
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            messages.success(request, " you  are in ok.")
-            
+
+            # Set session expiry based on "Remember Me"
+            if remember_me:
+                request.session.set_expiry(60 * 60 * 24 * 30)  # 30 days
+            else:
+                request.session.set_expiry(0)  # Expire on browser close
+
             return redirect('send_sms')
         else:
             return render(request, 'landing_page.html', {"error": "Invalid credentials", "form_type": "signin"})
     return render(request, 'landing_page.html', {"form_type": "signin"})
+
 
 
 def signup_view(request):
@@ -49,6 +60,8 @@ def logout_view(request):
     logout(request)
     request.session.clear()
     return redirect('signin')
+
+
 
 
 def send_sms(request):
@@ -116,3 +129,53 @@ def send_sms(request):
         }, status=200)
 
     return render(request, 'send_sms.html')
+
+
+import requests
+
+
+def send_emails(request):
+    if not request.user.is_authenticated:
+        return redirect('landing_page')
+
+    if request.method == 'POST':
+        recipient_email = request.POST.get('email', '')
+        subject = request.POST.get('subject', '')
+        message_content = request.POST.get('message_content', '')
+
+        if not recipient_email or not subject or not message_content:
+            return JsonResponse({"status": "error", "message": "Email, subject, and message are required."}, status=400)
+
+        # Hardcoded Mailgun credentials and domain
+        mailgun_api_key = 'your-mailgun-api-key'  # Replace with your Mailgun API key
+        mailgun_domain = 'your-mailgun-domain.com'  # Replace with your Mailgun domain (e.g., mg.yourdomain.com)
+
+        # Sending email using Mailgun API via requests
+        try:
+            # API endpoint for sending emails through Mailgun
+            url = f"https://api.mailgun.net/v3/{mailgun_domain}/messages"
+            
+            # Mailgun API authentication
+            auth = ('api', mailgun_api_key)
+            
+            # Data for the email
+            data = {
+                'from': f"Webtrix <postmaster@{mailgun_domain}>",  # Change to your sending email address
+                'to': recipient_email,
+                'subject': subject,
+                'text': message_content,
+            }
+            
+            # Send the request to Mailgun's API
+            response = requests.post(url, auth=auth, data=data)
+
+            # Check the response from Mailgun
+            if response.status_code == 200:
+                return JsonResponse({"status": "success", "message": "Email sent successfully."}, status=200)
+            else:
+                return JsonResponse({"status": "error", "message": "Failed to send email.", "details": response.text}, status=500)
+
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+    return render(request, 'send_emails.html')

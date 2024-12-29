@@ -1,0 +1,101 @@
+:root {
+    /* Default light mode colors */
+    --bg-color: #ffffff;
+    --text-color: rgb(48, 4, 41);
+    --card-bg-color: #f8f9fa;
+    --card-text-color: rgb(48, 4, 41);
+    --header-bg-color: #007bff;
+    --sidebar-bg-color: #343a40;
+    --sidebar-icon-color: #adb5bd;
+}
+
+body.dark-mode {
+    /* Dark mode colors */
+    --bg-color: rgb(13, 13, 14);
+    --text-color: rgb(220, 220, 220);
+    --card-bg-color: rgb(23, 23, 24);
+    --card-text-color: rgb(200, 200, 200);
+    --header-bg-color: rgb(34, 34, 34);
+    --sidebar-bg-color: rgb(20, 20, 20);
+    --sidebar-icon-color: rgb(150, 150, 150);
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Sidebar */
+.sidebar {
+    background-color: var(--sidebar-bg-color);
+}
+
+.sidebar i {
+    color: var(--sidebar-icon-color);
+}
+
+.sidebar i:hover {
+    color: var(--text-color);
+}
+
+/* Header */
+.header {
+    background-color: var(--header-bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Content */
+.card {
+    background-color: var(--card-bg-color);
+    color: var(--card-text-color);
+    border: 1px solid var(--text-color);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+#left-card,
+#right-card {
+    background-color: var(--card-bg-color);
+    color: var(--card-text-color);
+    border: 1px solid var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Form and Input Fields */
+form {
+    background-color: var(--card-bg-color);
+    color: var(--card-text-color);
+    border: 1px solid var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+input, textarea, select {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border: 1px solid var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+button {
+    background-color: var(--header-bg-color);
+    color: var(--text-color);
+    border: 1px solid var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Success and Failure Popups */
+#successPopup,
+#failurePopup {
+    background-color: var(--card-bg-color);
+    color: var(--card-text-color);
+    border: 1px solid var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Spinner */
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-top: 4px solid var(--text-color);
+}

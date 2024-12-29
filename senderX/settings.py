@@ -28,6 +28,7 @@ TWILIO_PHONE_NUMBER = config('TWILIO_PHONE_NUMBER')
 
 
 
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -127,10 +128,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True  # Set to True in production with HTTPS
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-SESSION_COOKIE_AGE = 1209600  # 2 weeks
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 30  # Default: 30 days
 
 
 AUTHENTICATION_BACKENDS = [

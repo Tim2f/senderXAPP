@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Blaster X</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            background-color:rgb(18, 28, 167);
+            color: white;
+        }
+
+        .navbar-brand, .nav-link {
+            color: #ffffff !important;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background-color: #343a40;
+            width: 80px;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 70px;
+        }
+        .sidebar i {
+            color: #adb5bd;
+            font-size: 24px;
+            margin: 20px 0;
+            cursor: pointer;
+        }
+        .sidebar i:hover {
+            color: #ffffff;
+        }
+
+        .container {
+            margin-top: 30px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .spinner-border {
+            display: none;
+        }
+
+        .success-popup, .failure-popup {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            z-index: 9999;
+            display: none;
+        }
+
+        .success-popup {
+            background-color: green;
+            color: white;
+        }
+
+        .failure-popup {
+            background-color: red;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <i class="fas fa-home"></i>
+        <i class="fas fa-paper-plane"></i>
+        <i class="fas fa-cogs"></i>
+        <i class="fas fa-info-circle"></i>
+        <i <button id="themeToggle" class="theme-toggle">
+            <i id="themeIcon" class="fas fa-sun"></i>
+          </button></i>
+    </div>
+    <nav class="navbar navbar-expand-lg">
+        <a class="navbar-brand" href="#">Email Blaster X</a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'send_sms' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Settings</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Sign Out</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title text-center">Bulk Email Blaster</h5>
+                <form id="emailForm">
+
+                          <!-- Country Selector -->
+            <div class="form-group">
+                <label for="country">Select Country:</label>
+                <select class="form-control" id="country" name="country" required>
+                    <option value="US">USA</option>
+                    <option value="AU">Australia</option>
+                    <option value="CA">Canada</option>
+                    <option value="IN">India</option>
+                </select>
+            </div>
+                    <!-- Email Recipients -->
+                    <div class="form-group">
+                        <label for="recipients">Enter Recipients (comma-separated):</label>
+                        <textarea class="form-control" id="recipients" name="recipients" rows="2" required></textarea>
+                    </div>
+
+                    <!-- File Upload -->
+                    <div class="form-group">
+                        <label for="file_upload">Upload Email List (CSV file, optional):</label>
+                        <input type="file" class="form-control-file" id="file_upload" name="file_upload">
+                    </div>
+
+                    <!-- Email Subject -->
+                    <div class="form-group">
+                        <label for="subject">Email Subject:</label>
+                        <input type="text" class="form-control" id="subject" name="subject" required>
+                    </div>
+
+                    <!-- Email Body -->
+                    <div class="form-group">
+                        <label for="body">Email Body (HTML supported):</label>
+                        <textarea class="form-control" id="body" name="body" rows="5" required></textarea>
+                    </div>
+
+                    <button type="button" class="btn btn-primary btn-block" onclick="sendEmails()">Send Emails</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="card mt-4" id="resultCard" style="display: none;">
+            <div class="card-body">
+                <h5 class="card-title">Email Report</h5>
+                <div id="result"></div>
+            </div>
+        </div>
+
+        <!-- Spinner -->
+        <div class="text-center mt-3">
+            <div class="spinner-border text-primary" id="spinner" role="status">
+                <span class="sr-only">Sending...</span>
+            </div>
+        </div>
+
+        <!-- Success and Failure Popups -->
+        <div class="success-popup" id="successPopup">Emails Sent Successfully!</div>
+        <div class="failure-popup" id="failurePopup">Failed to Send Emails!</div>
+    </div>
+
+    <script>
+        function sendEmails() {
+            const formData = new FormData(document.getElementById("emailForm"));
+
+            document.getElementById("spinner").style.display = "inline-block"; // Show spinner
+            document.getElementById("resultCard").style.display = "none"; // Hide result section
+
+            fetch("{% url 'send_emails' %}", {
+                method: "POST",
+                body: formData,
+                headers: { "X-CSRFToken": "{{ csrf_token }}" }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("spinner").style.display = "none"; // Hide spinner
+
+                    if (data.status === "success") {
+                        showPopup("success");
+                        displayResults(data);
+                    } else {
+                        showPopup("failure");
+                    }
+                })
+                .catch(error => {
+                    document.getElementById("spinner").style.display = "none"; // Hide spinner
+                    showPopup("failure");
+                });
+        }
+
+        function showPopup(type) {
+            const popup = type === "success" ? document.getElementById("successPopup") : document.getElementById("failurePopup");
+            popup.style.display = "block";
+            setTimeout(() => {
+                popup.style.display = "none";
+            }, 3000);
+        }
+
+        function displayResults(data) {
+            const resultCard = document.getElementById("resultCard");
+            const result = document.getElementById("result");
+
+            result.innerHTML = `
+                <p><strong>Total Emails:</strong> ${data.total}</p>
+                <p><strong>Emails Sent:</strong> ${data.sent}</p>
+                <p><strong>Failed Emails:</strong> ${data.failed}</p>
+                <p><strong>Failed Recipients:</strong> ${data.failed_recipients.join(", ")}</p>
+            `;
+
+            resultCard.style.display = "block";
+        }
+    </script>
+</body>
+</html>
